@@ -2,6 +2,15 @@
 
 A high-performance vector similarity search engine with LSH (Locality-Sensitive Hashing) optimization, written in Go.
 
+## Overview
+
+VectorVault is designed to be your secure and efficient vault for vector embeddings, providing:
+
+- **Security**: Thread-safe operations and data integrity
+- **Speed**: LSH-based similarity search with SIMD optimizations
+- **Scalability**: Efficient memory usage and parallel processing
+- **Simplicity**: Clean API design following Go idioms
+
 ## Features
 
 - Fast similarity search using LSH (Locality-Sensitive Hashing)
@@ -9,11 +18,17 @@ A high-performance vector similarity search engine with LSH (Locality-Sensitive 
 - Thread-safe concurrent operations with mutex protection
 - Parallel processing for search operations
 - Configurable LSH parameters for fine-tuning
-- Comprehensive test coverage and benchmarks
 - Memory-efficient storage and retrieval
-- Easy-to-use API with clear documentation
+- Comprehensive test coverage and benchmarks
 
-## Local Development Setup
+## Getting Started
+
+### Prerequisites
+
+- Go 1.21 or later
+- Make (optional, for running commands)
+
+### Installation
 
 1. Clone the repository:
 ```bash
@@ -26,7 +41,7 @@ cd vectorvault
 go mod tidy
 ```
 
-## Quick Start
+### Quick Start Example
 
 ```go
 package main
@@ -52,7 +67,9 @@ func main() {
 }
 ```
 
-## Project Structure
+## Documentation
+
+### Project Structure
 
 ```
 .
@@ -71,42 +88,30 @@ func main() {
 └── README.md
 ```
 
-## Why VectorVault?
+### Configuration
 
-VectorVault is designed to be your secure and efficient vault for vector embeddings. It provides:
+#### LSH Parameters
 
-- **Security**: Thread-safe operations and data integrity
-- **Speed**: LSH-based similarity search with SIMD optimizations
-- **Scalability**: Efficient memory usage and parallel processing
-- **Simplicity**: Clean API design with Go's idioms
+Configure VectorVault with custom LSH parameters:
 
-## Development
-
-### Prerequisites
-
-- Go 1.21 or later
-- Make (optional, for running commands)
-
-### Running Tests
-
-Run all tests:
-```bash
-go test ./...
+```go
+params := vectorstore.LSHParams{
+    NumHashTables:    6,    // More tables = better recall, more memory
+    NumHashFunctions: 8,    // More functions = better precision, slower
+    BucketWidth:     4.0,  // Larger width = more matches, less precision
+}
+vs := vectorstore.New(params)
 ```
 
-Run tests with coverage:
-```bash
-go test -cover ./...
-```
+#### Thread Safety
 
-Run benchmarks:
-```bash
-go test -bench=. ./internal/vectorstore
-```
+All operations are thread-safe by default:
 
-Run specific test:
-```bash
-go test -v -run TestVectorStoreSearch ./internal/vectorstore
+```go
+// These operations can be performed concurrently
+go func() { vs.Add("key1", vector1) }()
+go func() { vs.Search(queryVector, 10) }()
+go func() { vs.Delete("key2") }()
 ```
 
 ### Examples
@@ -127,7 +132,25 @@ export OPENAI_API_KEY='your-api-key-here'
 go run examples/semantic_search/main.go
 ```
 
-## Performance
+## Development
+
+### Running Tests
+
+```bash
+# Run all tests
+go test ./...
+
+# Run tests with coverage
+go test -cover ./...
+
+# Run benchmarks
+go test -bench=. ./internal/vectorstore
+
+# Run specific test
+go test -v -run TestVectorStoreSearch ./internal/vectorstore
+```
+
+### Performance Metrics
 
 VectorVault is optimized for both speed and memory efficiency:
 
@@ -136,50 +159,23 @@ VectorVault is optimized for both speed and memory efficiency:
 - Parallel search processing
 - SIMD-optimized similarity calculations
 
-### Benchmark Results
+#### Benchmark Results
 
 ```
 BenchmarkVectorStore/Add-10    	  300000	      3824 ns/op
 BenchmarkVectorStore/Search-10 	   50000	     31245 ns/op
 ```
 
-## Configuration
-
-### LSH Parameters
-
-VectorVault can be configured with custom LSH parameters:
-
-```go
-params := vectorstore.LSHParams{
-    NumHashTables:    6,    // More tables = better recall, more memory
-    NumHashFunctions: 8,    // More functions = better precision, slower
-    BucketWidth:     4.0,  // Larger width = more matches, less precision
-}
-vs := vectorstore.New(params)
-```
-
-### Thread Safety
-
-All operations are thread-safe by default. VectorVault uses mutexes to ensure safe concurrent access:
-
-```go
-// These operations can be performed concurrently
-go func() { vs.Add("key1", vector1) }()
-go func() { vs.Search(queryVector, 10) }()
-go func() { vs.Delete("key2") }()
-```
-
 ## Contributing
 
 1. Fork the repository
 2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'feat: add amazing feature'`)
+3. Commit your changes using conventional commit format
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
 ### Commit Message Format
 
-Follow the conventional commit format:
 ```
 <type>(<scope>): <description>
 
